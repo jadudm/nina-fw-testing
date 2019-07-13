@@ -4,6 +4,7 @@ from digitalio import DigitalInOut
 from time import sleep
 from adafruit_bus_device.i2c_device import I2CDevice
 import neopixel, random
+from adafruit_esp32spi import adafruit_esp32spi
 
 pxl = neopixel.NeoPixel(board.NEOPIXEL, 1)
 
@@ -109,7 +110,7 @@ def write_msg(tag, ls, addr = 0x2A, stp = False):
   end = make_msg(ls) + 1
   # print("SENDING: ", bytes(msg)[0:end])
   with device:
-    device.write(bytes(msg), end = end)
+    device.write(bytes(msg), end = end, stop=True)
 
 # 0x00 is INPUT
 # 0x01 is OUTPUT
@@ -122,19 +123,24 @@ def pinMode(pin, mode):
 HIGH = const(0x01)
 LOW  = const(0x00)
 def digitalWrite(pin, lvl):
-  ls = [[_SET_DIGITAL_WRITE_CMD], [pin], [lvl]]
+  # ls = [[_SET_DIGITAL_WRITE_CMD], [pin], [lvl]]
+  ls = [0x0E, ]
   write_msg("digitalWrite({0}, {1})".format(pin, lvl), ls)
 
 
-pxl[0] = (random.randint(60, 120), random.randint(60, 120), random.randint(60, 120))
-pxl.show()
+# pxl[0] = (random.randint(10, 30), 0, random.randint(60, 120))
+# pxl.show()
 
-SLEEP_TIME = 0.01
+SLEEP_TIME = 0.5
 pinMode(13, OUTPUT)
 while True:
   digitalWrite(13, HIGH)
+  # pxl[0] = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
   sleep(SLEEP_TIME)
   digitalWrite(13, LOW)
+  # pxl[0] = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
   sleep(SLEEP_TIME)
+
+
 
 print("Done")
