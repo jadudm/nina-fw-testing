@@ -3,18 +3,22 @@ import busio
 from digitalio import DigitalInOut
 import config
 
+# Using the new I2C library.
+import adafruit_esp32spi.adafruit_esp32spi_requests as requests
+
+from adafruit_esp32i2c import adafruit_esp32
+params = {'SCL' : board.SCL, 'SDA' : board.SDA, 'address' : 0x2A}
+protocol = adafruit_esp32.I2C(params, None, None, None, debug=3)
+esp = adafruit_esp32.ESP_Control(protocol)
+
 print("ESP32 I2C webclient test")
 
 TEXT_URL = "http://wifitest.adafruit.com/testwifi/index.html"
 JSON_URL = "http://api.coindesk.com/v1/bpi/currentprice/USD.json"
 
-i2c = busio.I2C(board.SCL, board.SDA)
-# esp = adafruit_esp32spi.ESP_SPIcontrol(spi, esp32_cs, esp32_ready, esp32_reset)
-# esp = adafruit_esp32spi.ESP_I2Ccontrol(i2c, 0x2A)
-
 requests.set_interface(esp)
 
-if esp.status == adafruit_esp32spi.WL_IDLE_STATUS:
+if esp.status == adafruit_esp32.WL_IDLE_STATUS:
     print("ESP32 found and in idle mode")
 print("Firmware vers.", esp.firmware_version)
 print("MAC addr:", [hex(i) for i in esp.MAC_address])
