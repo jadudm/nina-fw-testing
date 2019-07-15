@@ -2,6 +2,7 @@ import board
 import busio
 from digitalio import DigitalInOut
 import config
+import time
 
 # Using the new I2C library.
 import adafruit_esp32spi.adafruit_esp32spi_requests as requests
@@ -12,7 +13,10 @@ TEXT_URL = "http://wifitest.adafruit.com/testwifi/index.html"
 JSON_URL = "http://api.coindesk.com/v1/bpi/currentprice/USD.json"
 
 params = {'SCL' : board.SCL, 'SDA' : board.SDA, 'address' : 0x2A}
-protocol = adafruit_esp32.I2C(params, ready_pin=DigitalInOut(board.D5), debug=3)
+protocol = adafruit_esp32.I2C(params, 
+                              ready_pin=DigitalInOut(board.D5), 
+                              reset_pin=DigitalInOut(board.D6),
+                              debug=False)
 
 esp = adafruit_esp32.ESP_Control(protocol)
 requests.set_interface(esp)
